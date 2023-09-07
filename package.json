@@ -1,6 +1,5 @@
 {
   "name": "todos",
-  "homepage": "http://{github-username}.github.io/{repo-name}",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
