@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
-import Task, { ITask } from '../Task/Task';
+import { ControlPanel, Task } from '../index';
+import { ITask } from '../Task/Task';
 
 export type IFilter = 'all' | 'active' | 'completed';
 
@@ -51,6 +52,12 @@ const List: React.FC = () => {
     [tasks],
   );
 
+  const handleClearCompleted = useCallback(() => {
+    const newTasks = tasks.filter((item) => item.completed === false);
+
+    setTasks(newTasks);
+  }, [tasks]);
+
   return (
     <div className="d-flex flex-column align-items-center">
       <h1 className="display-1 text-light-emphasis">todos</h1>
@@ -75,6 +82,12 @@ const List: React.FC = () => {
                 />
               ))}
             </div>
+            <ControlPanel
+              data={tasks}
+              filter={filter}
+              onChangeFilter={setFilter}
+              onClearCompleted={handleClearCompleted}
+            />
           </>
         ) : null}
       </div>
