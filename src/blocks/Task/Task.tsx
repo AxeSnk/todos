@@ -6,28 +6,27 @@ export type ITask = {
   completed: boolean;
 };
 
-const Task: React.FC<{
-  data?: ITask;
-  onChangeStatus: () => void;
-  onDelete: () => void;
-}> = ({ data = {}, onChangeStatus, onDelete }) => {
-  const { title, completed } = data;
+type TaskProps = {
+  data: ITask;
+  onChangeStatus: (id: number) => void;
+  onDelete: (id: number) => void;
+};
 
+const Task: React.FC<TaskProps> = (props) => {
+  const { data, onChangeStatus, onDelete } = props;
+  const { title, completed, id } = data;
+  
   return (
     <div className="d-flex gap-3 align-items-center border-bottom px-2 py-1 bg-body" data-testid="task">
-      <input type="checkbox" checked={true} onChange={onChangeStatus} data-testid="checkbox" />
+      <input type="checkbox" checked={data.completed} onChange={() => onChangeStatus(id)} data-testid="checkbox" />
       <p
-        className={`m-0 flex-fill fs-3 text-light-emphasis ${
-          completed && 'text-decoration-line-through'
-        }`}
-      >
-        {title}
-      </p>
+        className={`m-0 flex-fill fs-3 text-light-emphasis${completed ? ' text-decoration-line-through' : ''}`}
+      >{title}</p>
       <button
         type="button"
         className="btn-close"
         aria-label="Close"
-        onClick={onDelete}
+        onClick={() => onDelete(id)}
         data-testid="button"
       />
     </div>

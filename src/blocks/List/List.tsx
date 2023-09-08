@@ -1,35 +1,43 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 
-import { ControlPanel, Task } from '../index';
-import { ITask } from '../Task/Task';
+import Input from "../Input/Input";
+import { ITask } from "../Task/Task";
+import { ControlPanel, Task } from "../index";
 
-export type IFilter = 'all' | 'active' | 'completed';
+export type IFilter = "all" | "active" | "completed";
 
 const List: React.FC = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [input, setInput] = useState('');
-  const [filter, setFilter] = useState<IFilter>('all');
+  const [input, setInput] = useState("");
+  const [filter, setFilter] = useState<IFilter>("all");
   const filteredTasks: ITask[] = tasks.filter((item) => {
-    if (filter === 'active') return !item.completed;
-    if (filter === 'completed') return item.completed;
+    if (filter === "active") return !item.completed;
+    if (filter === "completed") return item.completed;
     return item;
   });
 
-  const handleAdd = (ev: React.KeyboardEvent<HTMLInputElement>) => {
-    const emptyInput = input.trim() === '';
-    const keyEnter = ev.code === 'Enter';
+  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  }, []);
 
-    if (keyEnter && !emptyInput) {
-      const newTask: ITask = {
-        id: Date.now(),
-        title: input,
-        completed: false,
-      };
+  const handleAdd = useCallback(
+    (ev: React.KeyboardEvent<HTMLInputElement>) => {
+      const emptyInput = input.trim() === "";
+      const keyEnter = ev.code === "Enter";
 
-      setTasks((prev) => [...prev, newTask]);
-      setInput('');
-    }
-  };
+      if (keyEnter && !emptyInput) {
+        const newTask: ITask = {
+          id: Date.now(),
+          title: input,
+          completed: false,
+        };
+
+        setTasks((prev) => [...prev, newTask]);
+        setInput("");
+      }
+    },
+    [input]
+  );
 
   const handleToggleComplete = useCallback(
     (id: number) => {
@@ -43,54 +51,33 @@ const List: React.FC = () => {
     [tasks],
   );
 
-  const handleDelete = useCallback(
-    (id: number) => {
-      const newTasks = tasks.filter((item) => item.id !== id);
-
-      setTasks(newTasks);
-    },
-    [tasks],
-  );
+  const handleDelete = useCallback((id: number) => {
+    setTasks((prev) => prev.filter((item) => item.id !== id));
+  }, []);
 
   const handleClearCompleted = useCallback(() => {
-    const newTasks = tasks.filter((item) => item.completed === false);
-
-    setTasks(newTasks);
-  }, [tasks]);
+    setTasks((prev) => prev.filter((item) => item.completed === false));
+  }, []);
 
   return (
     <div className="d-flex flex-column align-items-center">
       <h1 className="display-1 text-light-emphasis">todos</h1>
       <div className="shadow bg-body-tertiary p-2">
-        <input
-          type="text"
-          value={input}
-          placeholder="What need to be done?"
-          onChange={(e) => setInput(e.target.value)}
-          onKeyUpCapture={handleAdd}
-          className="form-control mb-2"
-          data-testid="input"
+        <Input value={input} onChange={handleInput} onAdd={handleAdd} />
+        {filteredTasks.map((item) => (
+          <Task
+            key={item.id}
+            data={item}
+            onChangeStatus={handleToggleComplete}
+            onDelete={handleDelete}
+          />
+        ))}
+        <ControlPanel
+          data={tasks}
+          filter={filter}
+          onChangeFilter={setFilter}
+          onClearCompleted={handleClearCompleted}
         />
-        {tasks.length ? (
-          <>
-            <div className="d-flex flex-column">
-              {filteredTasks.map((item) => (
-                <Task
-                  key={item.id}
-                  data={item}
-                  onChangeStatus={() => handleToggleComplete(item.id)}
-                  onDelete={() => handleDelete(item.id)}
-                />
-              ))}
-            </div>
-            <ControlPanel
-              data={tasks}
-              filter={filter}
-              onChangeFilter={setFilter}
-              onClearCompleted={handleClearCompleted}
-            />
-          </>
-        ) : null}
       </div>
     </div>
   );
