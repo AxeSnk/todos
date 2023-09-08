@@ -7,15 +7,15 @@ export type ITask = {
 };
 
 const Task: React.FC<{
-  data: ITask;
+  data?: ITask;
   onChangeStatus: () => void;
   onDelete: () => void;
-}> = ({ data, onChangeStatus, onDelete }) => {
+}> = ({ data = {}, onChangeStatus, onDelete }) => {
   const { title, completed } = data;
 
   return (
-    <div className="d-flex gap-3 align-items-center border-bottom px-2 py-1 bg-body">
-      <input type="checkbox" checked={completed} onClick={onChangeStatus} />
+    <div className="d-flex gap-3 align-items-center border-bottom px-2 py-1 bg-body" data-testid="task">
+      <input type="checkbox" checked={true} onChange={onChangeStatus} data-testid="checkbox" />
       <p
         className={`m-0 flex-fill fs-3 text-light-emphasis ${
           completed && 'text-decoration-line-through'
@@ -28,6 +28,7 @@ const Task: React.FC<{
         className="btn-close"
         aria-label="Close"
         onClick={onDelete}
+        data-testid="button"
       />
     </div>
   );

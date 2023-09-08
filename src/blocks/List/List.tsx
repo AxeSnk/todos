@@ -69,6 +69,7 @@ const List: React.FC = () => {
           onChange={(e) => setInput(e.target.value)}
           onKeyUpCapture={handleAdd}
           className="form-control mb-2"
+          data-testid="input"
         />
         {tasks.length ? (
           <>
